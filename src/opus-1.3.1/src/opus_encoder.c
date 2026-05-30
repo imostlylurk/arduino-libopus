@@ -1353,9 +1353,7 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
     /* SILK-only build: always force MODE_SILK_ONLY */
     {
        (void)stereo_width;
-       (void)mode_switchable;
        (void)voice_est;
-       (void)delay;
        st->mode = MODE_SILK_ONLY;
     }
 #else
