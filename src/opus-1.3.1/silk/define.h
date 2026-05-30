@@ -37,9 +37,9 @@ extern "C"
 #endif
 
 /* Max number of encoder channels (1/2) */
-#define ENCODER_NUM_CHANNELS                    2
+#define ENCODER_NUM_CHANNELS                    1
 /* Number of decoder channels (1/2) */
-#define DECODER_NUM_CHANNELS                    2
+#define DECODER_NUM_CHANNELS                    1
 
 #define MAX_FRAMES_PER_PACKET                   3
 
@@ -64,7 +64,7 @@ extern "C"
 
 /* Maximum sampling frequency */
 #define MAX_FS_KHZ                              16
-#define MAX_API_FS_KHZ                          48
+#define MAX_API_FS_KHZ                          16
 
 /* Signal types */
 #define TYPE_NO_VOICE_ACTIVITY                  0

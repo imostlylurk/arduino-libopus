@@ -28,6 +28,9 @@
 /* Compile as fixed-point (for machines without a fast enough FPU) */
 #define FIXED_POINT 1
 
+/* SILK-only build: CELT and multichannel support stripped */
+#define OPUS_SILK_ONLY_BUILD 1
+
 // /* Float approximations */
 // #undef FLOAT_APPROX
 
@@ -184,8 +187,14 @@
 // /* Use C99 variable-size arrays */
 // #undef VAR_ARRAYS 
 
-/* Simulated Stack using the Heap */ 
-#define NONTHREADSAFE_PSEUDOSTACK 1
+/* Use C99 variable-size arrays -- USE_ALLOCA preferred for ESP32 */
+/* #define VAR_ARRAYS 1 */
+
+// /* Use alloca() for stack allocation */
+#define USE_ALLOCA 1
+
+/* Simulated Stack using the Heap -- disabled */
+/* #define NONTHREADSAFE_PSEUDOSTACK 1 */
 
 /* Simulated Stack Size using the Heap */ 
 #define GLOBAL_STACK_SIZE 60000

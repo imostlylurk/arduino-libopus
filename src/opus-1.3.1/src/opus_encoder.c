@@ -42,7 +42,11 @@
 #include "opus_private.h"
 #include "os_support.h"
 #include "cpu_support.h"
+#ifdef OPUS_SILK_ONLY_BUILD
+/* analysis module stripped for SILK-only build */
+#else
 #include "analysis.h"
+#endif
 #include "mathops.h"
 #include "tuning_parameters.h"
 #ifdef FIXED_POINT
@@ -1345,6 +1349,16 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
 #endif
 
     /* Mode selection depending on application and signal type */
+#ifdef OPUS_SILK_ONLY_BUILD
+    /* SILK-only build: always force MODE_SILK_ONLY */
+    {
+       (void)stereo_width;
+       (void)mode_switchable;
+       (void)voice_est;
+       (void)delay;
+       st->mode = MODE_SILK_ONLY;
+    }
+#else
     if (st->application == OPUS_APPLICATION_RESTRICTED_LOWDELAY)
     {
        st->mode = MODE_CELT_ONLY;
@@ -1403,6 +1417,7 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
     } else {
        st->mode = st->user_forced_mode;
     }
+#endif
 
     /* Override the chosen mode to make sure we meet the requested frame size */
     if (st->mode != MODE_CELT_ONLY && frame_size < st->Fs/100)
@@ -1558,10 +1573,17 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
 
     /* Chooses the appropriate mode for speech
        *NEVER* switch to/from CELT-only mode here as this will invalidate some assumptions */
+#ifndef OPUS_SILK_ONLY_BUILD
     if (st->mode == MODE_SILK_ONLY && curr_bandwidth > OPUS_BANDWIDTH_WIDEBAND)
         st->mode = MODE_HYBRID;
     if (st->mode == MODE_HYBRID && curr_bandwidth <= OPUS_BANDWIDTH_WIDEBAND)
         st->mode = MODE_SILK_ONLY;
+#else
+    /* SILK-only build: cap bandwidth at WIDEBAND, never switch to HYBRID */
+    if (curr_bandwidth > OPUS_BANDWIDTH_WIDEBAND)
+        curr_bandwidth = OPUS_BANDWIDTH_WIDEBAND;
+    st->mode = MODE_SILK_ONLY;
+#endif
 
     /* Can't support higher than >60 ms frames, and >20 ms when in Hybrid or CELT-only modes */
     if ((frame_size > st->Fs/50 && (st->mode != MODE_SILK_ONLY)) || frame_size > 3*st->Fs/50)
